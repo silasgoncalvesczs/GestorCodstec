@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestor de Contratos</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        input, select { padding: 8px; width: 100%; box-sizing: border-box; margin-top: 5px; }
+        button { background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .status-Pendente { color: orange; font-weight: bold; }
+        .status-Pago { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Painel de Controle</h1>
+
+        <h3>Novo Cliente</h3>
+        <form action="/add-cliente" method="POST">
+            <div class="form-group">
+                <input type="text" name="nome" placeholder="Nome do Cliente" required>
+                <input type="email" name="email" placeholder="Email">
+            </div>
+            <button type="submit">Salvar Cliente</button>
+        </form>
+
+        <hr>
+
+        <h3>Novo Contrato</h3>
+        <form action="/add-contrato" method="POST">
+            <div class="form-group">
+                <select name="cliente_id" required>
+                    <option value="">Selecione o Cliente</option>
+                    <% clientes.forEach(function(cliente) { %>
+                        <option value="<%= cliente.id %>"><%= cliente.nome %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" name="descricao" placeholder="Descrição do Serviço (Ex: Manutenção Mensal)" required>
+                <input type="number" step="0.01" name="valor_fixo" placeholder="Valor Fixo (R$)" required>
+                <input type="number" step="0.01" name="valor_variavel" placeholder="Valor Variável/Extra (R$)">
+                <label>Vencimento:</label>
+                <input type="date" name="data_vencimento" required>
+            </div>
+            <button type="submit">Gerar Contrato</button>
+        </form>
+
+        <h2>Meus Contratos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Serviço</th>
+                    <th>Total (R$)</th>
+                    <th>Vencimento</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% contratos.forEach(function(contrato) { %>
+                    <tr>
+                        <td><%= contrato.cliente_nome %></td>
+                        <td><%= contrato.descricao %></td>
+                        <td>R$ <%= (contrato.valor_fixo + contrato.valor_variavel).toFixed(2) %></td>
+                        <td><%= contrato.data_vencimento %></td>
+                        <td class="status-<%= contrato.status_pagamento %>"><%= contrato.status_pagamento %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
